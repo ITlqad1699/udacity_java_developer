@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
  * The type Cloud storage application tests.
  */
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class CloudStorageApplicationTests {
+public class CloudStorageApplicationTests {
     
     @LocalServerPort
     private int port;
@@ -43,7 +43,7 @@ class CloudStorageApplicationTests {
      * so I have to use chromedriver-win64\chromedriver.exe
      */
     @BeforeEach
-    public void beforeEach() {
+    void beforeEach() {
         System.setProperty("webdriver.chrome.driver", "chromedriver-win64\\chromedriver.exe");
         this.driver = new ChromeDriver();
     }
@@ -52,7 +52,7 @@ class CloudStorageApplicationTests {
      * After each.
      */
     @AfterEach
-    public void afterEach() {
+    void afterEach() {
         if (this.driver != null) {
             driver.quit();
         }
@@ -62,7 +62,7 @@ class CloudStorageApplicationTests {
      * Gets login page.
      */
     @Test
-    public void getLoginPage() {
+    void getLoginPage() {
         driver.get("http://localhost:" + this.port + "/login");
         assertEquals("Login", driver.getTitle());
     }
@@ -152,7 +152,7 @@ class CloudStorageApplicationTests {
      * https://review.udacity.com/#!/rubrics/2724/view
      */
     @Test
-    public void testRedirection() {
+    void testRedirection() {
         // Create a test account
         doMockSignUp("Redirection", "Test", "admin", "test123");
         driver.get("http://localhost:" + this.port + "/login");
@@ -173,7 +173,7 @@ class CloudStorageApplicationTests {
      * https://attacomsian.com/blog/spring-boot-custom-error-page#displaying-custom-error-page
      */
     @Test
-    public void testBadUrl() {
+    void testBadUrl() {
         // Create a test account
         doMockSignUp("URL", "Test", "admin", "123");
         doLogIn("admin", "123");
@@ -197,7 +197,7 @@ class CloudStorageApplicationTests {
      * https://spring.io/guides/gs/uploading-files/ under the "Tuning File Upload Limits" section.
      */
     @Test
-    public void testLargeUpload() {
+    void testLargeUpload() {
         // Create a test account
         doMockSignUp("Da", "Le", "admin1", "123");
         doLogIn("admin1", "123");
@@ -252,7 +252,7 @@ class CloudStorageApplicationTests {
      * Test add note.
      */
     @Test
-    public void testAddNote() {
+    void testAddNote() {
         doMockSignUp("Da", "Le", "admin1", "123");
         doLogIn("admin1", "123");
         doAddNote();
@@ -268,7 +268,7 @@ class CloudStorageApplicationTests {
      * Test edit note.
      */
     @Test
-    public void testEditNote() {
+    void testEditNote() {
         doMockSignUp("Da", "Le", "admin1", "123");
         doLogIn("admin1", "123");
         doAddNote();
@@ -304,7 +304,7 @@ class CloudStorageApplicationTests {
      * Test delete note.
      */
     @Test
-    public void testDeleteNote() {
+    void testDeleteNote() {
         doMockSignUp("Da", "Le", "admin1", "123");
         doLogIn("admin1", "123");
         doAddNote();
@@ -330,7 +330,7 @@ class CloudStorageApplicationTests {
     }
     
     @Test
-    public void testAddCredential() {
+    void testAddCredential() {
         doMockSignUp("Da", "Le", "admin1", "123");
         doLogIn("admin1", "123");
         doAddCredential();
@@ -344,7 +344,7 @@ class CloudStorageApplicationTests {
     }
     
     @Test
-    public void testEditCredentials() {
+    void testEditCredentials() {
         doMockSignUp("Da", "Le", "admin1", "123");
         doLogIn("admin1", "123");
         doAddCredential();
@@ -416,7 +416,7 @@ class CloudStorageApplicationTests {
     
     
     @Test
-    public void testDeleteCredential() {
+    void testDeleteCredential() {
         doMockSignUp("Da", "Le", "admin1", "123");
         doLogIn("admin1", "123");
         doAddCredential();

@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
-import static com.udacity.jwdnd.course1.cloudstorage.constant.CommonConstant.MAX_SIZE_MB;
-
 /**
  * The type File service.
  */
@@ -69,10 +67,6 @@ public class FileServiceImpl implements FileService {
                     return messageSource.getMessage(MessageConstant.FILE_EXISTS, new String[]{fileName}, Locale.getDefault());
                 }
                 
-                if (StringUtils.hasText(validateFileSize(fileDTO, fileName))) {
-                    return messageSource.getMessage(MessageConstant.FILE_EXCEED_MAX_SIZE, new String[]{fileName}, Locale.getDefault());
-                }
-                
                 File file = modelMapper.map(fileDTO, File.class);
                 
                 file.setUserId(userMapper.getUserByUserName(user.get().getUsername()).getUserId());
@@ -114,13 +108,5 @@ public class FileServiceImpl implements FileService {
         }
         return StringUtils.EMPTY;
     }
-    
-    private String validateFileSize(FileDTO fileDTO, String fileName) {
-        if (fileDTO.getFileSize() > MAX_SIZE_MB) {
-            return messageSource.getMessage(MessageConstant.FILE_EXCEED_MAX_SIZE, new String[]{fileName}, Locale.getDefault());
-        }
-        return StringUtils.EMPTY;
-    }
-    
     
 }

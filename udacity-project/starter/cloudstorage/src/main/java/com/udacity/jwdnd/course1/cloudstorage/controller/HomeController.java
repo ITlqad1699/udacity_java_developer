@@ -82,7 +82,6 @@ public class HomeController {
         model.addAttribute("credentials", credentialService.getAllCredential(userId));
         model.addAttribute("notes", noteService.getAllNote(userId));
         model.addAttribute("files", fileService.getAllFile(userId));
-//        model.addAttribute("encryptionService", encryptionService);
     }
     
 }

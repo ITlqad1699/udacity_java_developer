@@ -9,8 +9,8 @@ import com.udacity.jwdnd.course1.cloudstorage.services.FileService;
 import com.udacity.jwdnd.course1.cloudstorage.utils.StringUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.context.MessageSource;
+import org.springframework.http.ContentDisposition;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.Optional;
 
+import static com.udacity.jwdnd.course1.cloudstorage.constant.CommonConstant.MAX_SIZE_MB;
 import static com.udacity.jwdnd.course1.cloudstorage.constant.URLConstant.REDIRECT_HOME;
 
 /**
@@ -54,6 +55,13 @@ public class FileController {
     public String upload(@RequestParam(name = CommonConstant.FILE_UPLOAD) MultipartFile multipartFile,
                          RedirectAttributes redirectAttributes) throws IOException {
         
+        if (!validateFileSize(multipartFile)) {
+            redirectAttributes.addFlashAttribute(MessageConstant.ERROR_MESSAGE,
+                    messageSource.getMessage(MessageConstant.FILE_EXCEED_MAX_SIZE,
+                            new String[]{multipartFile.getOriginalFilename()}, Locale.getDefault()));
+            return REDIRECT_HOME;
+        }
+        
         if (StringUtils.hasText(validateFileEmpty(multipartFile))) {
             redirectAttributes.addFlashAttribute(MessageConstant.ERROR_MESSAGE, validateFileEmpty(multipartFile));
             return REDIRECT_HOME;
@@ -79,6 +87,13 @@ public class FileController {
         
     }
     
+    /**
+     * Delete file string.
+     *
+     * @param fileId             the file id
+     * @param redirectAttributes the redirect attributes
+     * @return the string
+     */
     @GetMapping(URLConstant.DELETE_FILE)
     public String deleteFile(@PathVariable String fileId, RedirectAttributes redirectAttributes) {
         String message = fileService.deleteFile(Integer.valueOf(fileId));
@@ -92,18 +107,32 @@ public class FileController {
     }
     
     
+    /**
+     * Gets file by id.
+     *
+     * @param fileId             the file id
+     * @param redirectAttributes the redirect attributes
+     * @return the file by id
+     */
     @GetMapping(URLConstant.GET_FILE_BY_ID)
-    public ResponseEntity<byte[]> getFileByID(@PathVariable String fileId, RedirectAttributes redirectAttributes) {
+    public ResponseEntity<byte[]> download(@PathVariable String fileId, RedirectAttributes redirectAttributes) {
         
         Optional<File> file = fileService.getFileByFileId(Integer.valueOf(fileId));
+        
         if (file.isEmpty()) {
             redirectAttributes.addFlashAttribute(MessageConstant.ERROR_MESSAGE,
                     messageSource.getMessage(MessageConstant.FILE_NOT_EXIST, null, Locale.getDefault()));
-            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         }
+        
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.parseMediaType(file.get().getContentType()));
-        return new ResponseEntity<>(file.get().getFileData(), headers, HttpStatus.OK);
+        headers.setContentDisposition(ContentDisposition.builder("attachment")
+                .filename(file.get().getFileName())
+                .build());
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(file.get().getFileData());
     }
     
     private String validateFileEmpty(MultipartFile multipartFile) {
@@ -114,5 +143,7 @@ public class FileController {
         return StringUtils.EMPTY;
     }
     
-    
+    private boolean validateFileSize(MultipartFile file) {
+        return file.getSize() <= MAX_SIZE_MB;
+    }
 }
